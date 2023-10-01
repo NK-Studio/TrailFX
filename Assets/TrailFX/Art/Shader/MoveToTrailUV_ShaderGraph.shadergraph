@@ -1967,12 +1967,12 @@
     "m_Guid": {
         "m_GuidSerialized": "1f4dc0c0-8d06-478c-a567-006d60ea111b"
     },
-    "m_Name": "_MoveToMaterialUV",
+    "m_Name": "MoveToMaterialUV",
     "m_DefaultRefNameVersion": 0,
     "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_F7AFCB2C",
     "m_OverrideReferenceName": "_MoveToMaterialUV",
-    "m_GeneratePropertyBlock": false,
+    "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
     "m_DismissedVersion": 0,
@@ -2127,7 +2127,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "d4c3277d7fc6d082a9288fef5f934155",
     "m_Id": 0,
-    "m_DisplayName": "_MoveToMaterialUV",
+    "m_DisplayName": "MoveToMaterialUV",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
