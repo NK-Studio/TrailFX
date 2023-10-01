@@ -1,14 +1,17 @@
-Shader "MoveToTrailUV/AlphaBlend"
+Shader "MoveToTrailUV/Add"
 {
     Properties
     {
         _BaseMap("Base Map", 2D) = "white" {}
-        _AlphaMap("Alpha Map", 2D) = "white" {}
+        _Multiplier("Multiplier", Float) = 1
     }
     SubShader
     {
-        Tags { "RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "Queue" = "Transparent"}
-        Blend SrcAlpha OneMinusSrcAlpha // Traditional transparency
+        Tags
+        {
+            "RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "Queue" = "Transparent"
+        }
+        Blend One One // Additive
         ZWrite Off
 
         Pass
@@ -20,25 +23,22 @@ Shader "MoveToTrailUV/AlphaBlend"
 
             struct Attributes
             {
-                float4 positionOS   : POSITION;
-                float2 uv           : TEXCOORD0;
+                float4 positionOS : POSITION;
+                float2 uv : TEXCOORD0;
             };
 
             struct Varyings
             {
-                float4 positionHCS  : SV_POSITION;
-                float2 uv           : TEXCOORD0;
-                float2 uv2          : TEXCOORD1; // uv2�� uv�� ���ļ� float4�� ����ϱ⵵ ��.
+                float4 positionHCS : SV_POSITION;
+                float2 uv : TEXCOORD0;
             };
 
             TEXTURE2D(_BaseMap);
             SAMPLER(sampler_BaseMap);
-            TEXTURE2D(_AlphaMap);
-            SAMPLER(sampler_AlphaMap);
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseMap_ST;
-                float4 _AlphaMap_ST;
+                half _Multiplier;
             CBUFFER_END
 
             Varyings vert(Attributes IN)
@@ -46,15 +46,15 @@ Shader "MoveToTrailUV/AlphaBlend"
                 Varyings OUT;
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                 OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
-                OUT.uv2 = TRANSFORM_TEX(IN.uv, _AlphaMap);
                 return OUT;
             }
 
             half4 frag(Varyings IN) : SV_Target
             {
                 half4 color = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, IN.uv);
-                half4 alpha = SAMPLE_TEXTURE2D(_AlphaMap, sampler_AlphaMap, IN.uv2);
-                color.a = alpha.r;
+                color.rgb *= _Multiplier; // Add 계열의 셰이더는 증폭 기능이 유용하다.
+                color.rgb *= color.a; // 알파채널정보가 있는 텍스쳐를 위한 안전장치.
+                color.a = 1; // Additive 블랜딩은 알파와 무관함.
                 return color;
             }
             ENDHLSL

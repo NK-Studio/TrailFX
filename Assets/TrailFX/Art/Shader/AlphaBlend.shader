@@ -1,14 +1,17 @@
-Shader "MoveToTrailUV/Add"
+Shader "MoveToTrailUV/AlphaBlend"
 {
     Properties
     {
         _BaseMap("Base Map", 2D) = "white" {}
-        _Multiplier("Multiplier", Float) = 1
+        _AlphaMap("Alpha Map", 2D) = "white" {}
     }
     SubShader
     {
-        Tags { "RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "Queue" = "Transparent"}
-        Blend One One // Additive
+        Tags
+        {
+            "RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "Queue" = "Transparent"
+        }
+        Blend SrcAlpha OneMinusSrcAlpha // Traditional transparency
         ZWrite Off
 
         Pass
@@ -20,22 +23,25 @@ Shader "MoveToTrailUV/Add"
 
             struct Attributes
             {
-                float4 positionOS   : POSITION;
-                float2 uv           : TEXCOORD0;
+                float4 positionOS : POSITION;
+                float2 uv : TEXCOORD0;
             };
 
             struct Varyings
             {
-                float4 positionHCS  : SV_POSITION;
-                float2 uv           : TEXCOORD0;
+                float4 positionHCS : SV_POSITION;
+                float2 uv : TEXCOORD0;
+                float2 uv2 : TEXCOORD1; // uv2Î•º uvÏôÄ Ìï©Ï≥êÏÑú float4Î°ú ÏÇ¨Ïö©ÌïòÍ∏∞ÎèÑ Ìï®.
             };
 
             TEXTURE2D(_BaseMap);
             SAMPLER(sampler_BaseMap);
+            TEXTURE2D(_AlphaMap);
+            SAMPLER(sampler_AlphaMap);
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseMap_ST;
-                half _Multiplier;
+                float4 _AlphaMap_ST;
             CBUFFER_END
 
             Varyings vert(Attributes IN)
@@ -43,15 +49,15 @@ Shader "MoveToTrailUV/Add"
                 Varyings OUT;
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                 OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
+                OUT.uv2 = TRANSFORM_TEX(IN.uv, _AlphaMap);
                 return OUT;
             }
 
             half4 frag(Varyings IN) : SV_Target
             {
                 half4 color = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, IN.uv);
-                color.rgb *= _Multiplier; // Add ∞Ëø≠¿« ºŒ¿Ã¥ı¥¬ ¡ı∆¯ ±‚¥…¿Ã ¿ØøÎ«œ¥Ÿ.
-                color.rgb *= color.a; // æÀ∆ƒ√§≥Œ¡§∫∏∞° ¿÷¥¬ ≈ÿΩ∫√ƒ∏¶ ¿ß«— æ»¿¸¿Âƒ°.
-                color.a = 1; // Additive ∫Ì∑£µ˘¿∫ æÀ∆ƒøÕ π´∞¸«‘.
+                half4 alpha = SAMPLE_TEXTURE2D(_AlphaMap, sampler_AlphaMap, IN.uv2);
+                color.a = alpha.r;
                 return color;
             }
             ENDHLSL

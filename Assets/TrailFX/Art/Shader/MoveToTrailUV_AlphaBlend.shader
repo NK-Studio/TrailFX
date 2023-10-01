@@ -1,5 +1,5 @@
 /*
-Trail ÄÄÆ÷³ÍÆ®°¡ Tiling À¸·Î ¼³Á¤µÇ¾î¾ßÇÔ. (±×·¡¾ß ½ºÅ©·ÑÀ» À§ÇÑ UV°¡ Trail ¼¼±×¸ÕÆ® Å©±â¿Í »ó°ü ¾øÀÌ ÀÏÁ¤ÇÏ°Ô ³ª¿È)
+Trail ì»´í¬ë„ŒíŠ¸ê°€ Tiling ìœ¼ë¡œ ì„¤ì •ë˜ì–´ì•¼í•¨. (ê·¸ë˜ì•¼ ìŠ¤í¬ë¡¤ì„ ìœ„í•œ UVê°€ Trail ì„¸ê·¸ë¨¼íŠ¸ í¬ê¸°ì™€ ìƒê´€ ì—†ì´ ì¼ì •í•˜ê²Œ ë‚˜ì˜´)
 */
 
 Shader "MoveToTrailUV/MoveToTrailUV_AlphaBLend"
@@ -50,8 +50,8 @@ Shader "MoveToTrailUV/MoveToTrailUV_AlphaBLend"
 					half _MainScrollSpeedU;
 					half _MainScrollSpeedV;
 				
-					// MoveToMaterialUV ½ºÅ©¸³Æ®¿¡¼­ Àü´Ş¹Ş´Â UV ½ºÅ©·Ñ °ª.
-					// ÇÁ·ÎÆÛÆ¼¿¡´Â ÀÏºÎ·¯ ³ÖÁö ¾ÊÀ½. ÇÁ·ÎÆÛÆ¼¿¡ ³ÖÀ» °æ¿ì ¿¡µğÅÍ¿¡¼­ ¹Ì¸®º¸±â·Î Àü´ŞµÇ´Â °ªµéÀÌ °è¼Ó ÀçÁú ¹öÀü º¯°æÀ¸·Î ÀÎ½ÄµÇ¾î¼­ ÇÁ·ÎÆÛÆ¼ ¾øÀÌ ÀÛµ¿ÇÏ´Â ¹æ½ÄÀ¸·Î Á¦ÀÛ
+					// MoveToMaterialUV ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì „ë‹¬ë°›ëŠ” UV ìŠ¤í¬ë¡¤ ê°’.
+					// í”„ë¡œí¼í‹°ì—ëŠ” ì¼ë¶€ëŸ¬ ë„£ì§€ ì•ŠìŒ. í”„ë¡œí¼í‹°ì— ë„£ì„ ê²½ìš° ì—ë””í„°ì—ì„œ ë¯¸ë¦¬ë³´ê¸°ë¡œ ì „ë‹¬ë˜ëŠ” ê°’ë“¤ì´ ê³„ì† ì¬ì§ˆ ë²„ì „ ë³€ê²½ìœ¼ë¡œ ì¸ì‹ë˜ì–´ì„œ í”„ë¡œí¼í‹° ì—†ì´ ì‘ë™í•˜ëŠ” ë°©ì‹ìœ¼ë¡œ ì œì‘
 					half _MoveToMaterialUV;
 				CBUFFER_END
 
@@ -71,7 +71,7 @@ Shader "MoveToTrailUV/MoveToTrailUV_AlphaBLend"
 				{
 					half4 mainTex = tex2D(_MainTex, IN.uv);
 
-					// ¸ŞÀÎ ÅØ½ºÃÄ °¡°ø
+					// ë©”ì¸ í…ìŠ¤ì³ ê°€ê³µ
 					mainTex.a = pow(abs(mainTex.a), _MainTexAPow);
 					half toonAlpha = saturate((mainTex.a - (1 - IN.color.a)) / _SoftAlpha);
 					half alpha = mainTex.a * IN.color.a;
