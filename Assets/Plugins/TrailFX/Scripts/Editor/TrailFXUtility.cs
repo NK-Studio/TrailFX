@@ -1,4 +1,5 @@
-﻿namespace FX
+﻿#if UNITY_EDITOR
+namespace FX
 {
     using UnityEditor;
     using UnityEngine;
@@ -39,3 +40,4 @@
         }
     }
 }
+#endif

@@ -42,7 +42,7 @@ namespace NKStudio
             foreach (MaterialData materialData in MultipleMaterialData)
             {
                 // m_move 값 초기화
-                materialData.Move = 0f;
+                materialData.SetMove(0f);
 
                 TrailRenderer trailRenderer = materialData.trailRenderer;
 
@@ -52,7 +52,7 @@ namespace NKStudio
                     materialData.CashMaterial = Instantiate(trailRenderer.sharedMaterial);
 
                     if (materialData.CashMaterial)
-                        materialData.uvTiling = materialData.CashMaterial.mainTextureScale;
+                        materialData.SetUVTiling(materialData.CashMaterial.mainTextureScale);
                 }
             }
         }
@@ -79,11 +79,11 @@ namespace NKStudio
                 if (!materialData.trailRenderer)
                     continue;
 
-                materialData.Move += distance * materialData.uvTiling.x;
+                materialData.SetMove(materialData.Move + distance * materialData.uvTiling.x);
 
                 // m_move 값이 지나치게 커지지 않도록 하기 위해 1 이상은 나머지 값만 전달. (이미 m_uvTiling.x 가 곱해진 값이어야함)
                 if (materialData.Move > 1f)
-                    materialData.Move %= 1f;
+                    materialData.SetMove(materialData.Move % 1f);
 
                 // 프로퍼티 존재 체크 없이 기록. 프로퍼티가 존재하면 재질 버전이 계속 변경된 것으로 처리되는 문제가 있음.
                 TrailRenderer trailRenderer = materialData.trailRenderer;

@@ -6,8 +6,8 @@ namespace NKStudio
     public class MaterialData
     {
         public TrailRenderer trailRenderer;
-        [HideInInspector] public Vector2 uvTiling;
-        [HideInInspector] public float Move;
+        public Vector2 uvTiling { get; private set; }
+        public float Move { get; private set; }
         [HideInInspector] public Material CashMaterial;
 
         public MaterialData(TrailRenderer trailRenderer, Material material, Vector2 uvScale, float move)
@@ -15,6 +15,17 @@ namespace NKStudio
             this.trailRenderer = trailRenderer;
             uvTiling = uvScale;
             Move = move;
+        }
+        
+        public void SetMove(float move)
+        {
+            Move = move;
+        }
+        
+        
+        public void SetUVTiling(Vector2 uvTiling)
+        {
+            this.uvTiling = uvTiling;
         }
     }
 }

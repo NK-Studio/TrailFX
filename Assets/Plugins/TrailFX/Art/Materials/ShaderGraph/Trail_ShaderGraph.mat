@@ -131,7 +131,6 @@ Material:
     - _UseTintTex: 0
     - _ZWrite: 1
     m_Colors:
-    - Vector4_9913EF71: {r: 0.4, g: 1, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _ColorArrow: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
