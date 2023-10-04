@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿using System.Linq;
+                  #if UNITY_EDITOR
 namespace FX
 {
     using UnityEditor;
@@ -37,6 +38,53 @@ namespace FX
                 }
 
                 EditorGUIUtility.SetIconForObject(targetObject, icon);
+            }
+            
+            /// <summary>
+            /// Fix Button이 있는 HelpBox를 반환합니다.
+            /// </summary>
+            /// <returns></returns>
+            public static (HelpBox helpBox, Button fixButton) FixHelpBox()
+            {
+                var helpBox = new HelpBox {
+                    messageType = HelpBoxMessageType.Warning,
+                    style = {
+                        alignItems = Align.FlexStart,
+                        paddingLeft = 12,
+                        height = 70
+                    }
+                };
+
+                var helpLogo = helpBox.Children().ElementAt(0);
+                helpLogo.style.marginTop = 5;
+
+                var helpText = helpBox.Children().ElementAt(1);
+                helpText.style.marginTop = 12;
+
+                Button fixButton = new Button();
+                fixButton.text = "Fix";
+
+                // position을 Absolute로 처리
+                fixButton.style.position = Position.Absolute;
+                fixButton.style.bottom = 5;
+                fixButton.style.right = 5;
+                fixButton.style.paddingLeft = 12;
+                fixButton.style.paddingRight = 12;
+                fixButton.style.paddingTop = 3;
+                fixButton.style.paddingBottom = 3;
+
+                helpBox.contentContainer.Add(fixButton);
+
+                return (helpBox, fixButton);
+            }
+
+            public static void OpenBehaviour(MonoBehaviour targetBehaviour)
+            {
+                var scriptAsset = MonoScript.FromMonoBehaviour(targetBehaviour);
+                var path = AssetDatabase.GetAssetPath(scriptAsset);
+
+                TextAsset textAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+                AssetDatabase.OpenAsset(textAsset);
             }
         }
     }

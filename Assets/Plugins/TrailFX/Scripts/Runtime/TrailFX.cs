@@ -23,7 +23,7 @@ namespace NKStudio
         private Vector3 _beforePosition = Vector3.zero;
 
         // 에디터에서 플레이 시킬 때 사용
-        [SerializeField] private bool _editorPlay;
+        [SerializeField] private bool editorPlay;
 
         // private void OnDisable()
         // {
@@ -120,7 +120,7 @@ namespace NKStudio
         {
             yield return new WaitForSeconds(0.1f);
 
-            if (_editorPlay)
+            if (editorPlay)
             {
                 EditorApplication.isPlaying = false;
                 Debug.LogError($"{gameObject.name}에 Editor Play 모드가 켜져있습니다.");
