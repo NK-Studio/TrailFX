@@ -11,10 +11,11 @@ namespace FX
         {
             private static VisualElement _cachedContextWidthElement;
             private static VisualElement _cachedInspectorElement;
-
-            public static VisualElement Space(float height)
+            
+            public static VisualElement Space(float width, float height)
             {
                 VisualElement space = new();
+                space.style.width = width;
                 space.style.height = height;
                 return space;
             }

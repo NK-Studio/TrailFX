@@ -10,7 +10,7 @@
 
 .TitleStyle:hover {
     cursor: link;
-}   
+}
 
 .GroupBoxStyle {
     background-color: var(--unity-colors-alternated_rows-background);
@@ -33,4 +33,23 @@
 .GroupBoxStyle > Label {
     -unity-font-style: bold;
     font-size: 14px;
+}
+
+.unity-list-view--with-header .unity-foldout__toggle {
+    display: none;
+}
+
+#unity-list-view__size-field {
+    display: none;
+}
+
+.ButtonActive_dark{
+    background-color: #FF4840;
+    -unity-font-style: bold;
+}
+
+.ButtonActive_white{
+    background-color: #FF5A4F;
+    color: white;
+    -unity-font-style: bold;
 }

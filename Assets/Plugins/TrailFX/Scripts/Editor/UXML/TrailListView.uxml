@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns="UnityEngine.UIElements" ue="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Plugins/TrailFX/Scripts/Editor/TrailFXUSS.uss?fileID=7433441132597879392&amp;guid=b94f253bde590554885ec4369af52afd&amp;type=3#TrailFXUSS" />
+    <ui:ListView virtualization-method="FixedHeight" reorder-mode="Animated" show-add-remove-footer="true" show-border="true" show-foldout-header="true" focusable="true" fixed-item-height="24" show-bound-collection-size="false" style="display: flex; visibility: visible;" />
+</ui:UXML>

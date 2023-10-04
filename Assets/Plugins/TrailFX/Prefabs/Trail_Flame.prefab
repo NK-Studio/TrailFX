@@ -457,9 +457,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 201e39126adb31344a8c2aba510fefdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveObject: {fileID: 0}
-  ShaderPropertyID: 797
-  MultipleMaterialData: []
+  MoveObject: {fileID: 3841384982787575142}
+  ShaderPropertyID: 807
+  MultipleMaterialData:
+  - trailRender: {fileID: 8690335885235380508}
+    Origin: {fileID: 0}
+    CashMaterial: {fileID: 0}
+  - trailRender: {fileID: 8690335885235380508}
+    Origin: {fileID: 0}
+    CashMaterial: {fileID: 0}
 --- !u!199 &7872313114495814224
 ParticleSystemRenderer:
   serializedVersion: 6
