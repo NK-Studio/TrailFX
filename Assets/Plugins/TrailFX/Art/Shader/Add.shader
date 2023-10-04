@@ -1,4 +1,4 @@
-Shader "MoveToTrailUV/Add"
+Shader "Universal Render Pipeline/TrailFX/Add"
 {
     Properties
     {

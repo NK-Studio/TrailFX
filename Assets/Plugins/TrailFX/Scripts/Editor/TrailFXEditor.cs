@@ -43,6 +43,8 @@ namespace NKStudio
         [SerializeField]
         private VisualTreeAsset trailTemplate;
 
+        private const string TargetShaderParameterReference = "_MoveToMaterialUV";
+
         private void OnEnable()
         {
             _trailFX = target as TrailFX;
@@ -91,12 +93,6 @@ namespace NKStudio
             var group = new GroupBox();
             group.AddToClassList("GroupBoxStyle");
 
-            var helpBox = new HelpBox {
-                messageType = HelpBoxMessageType.Warning,
-                text = "Renderer의 Texture Mode가 Tile이여야 합니다."
-            };
-            helpBox.SetActive(false);
-
             var (fixHelpBox, fixButton) = TrailFXEditorUtility.FixHelpBox();
             fixHelpBox.SetActive(false);
 
@@ -106,47 +102,29 @@ namespace NKStudio
             group.Add(TrailFXEditorUtility.Space(0, 5));
             group.Add(_materialDataField);
             group.Add(TrailFXEditorUtility.Space(0, 3));
-            group.Add(helpBox);
             group.Add(fixHelpBox);
             _root.Add(editorPlayButton);
 
+            RefreshListViewStyle();
             RefreshButtonStyle(editorPlayButton);
-            // _root.schedule.Execute(() =>
-            // {
-            //     helpBox.SetActive(false);
-            //     fixHelpBox.SetActive(false);
-            //
-            //     // 트레일 렌더러의 텍스쳐 모드가 Tile인지 체크
-            //     int notTileIndex = CheckTrailRendererTile();
-            //     if (notTileIndex != -1)
-            //     {
-            //         string message = $"{notTileIndex}번 Renderer의 Texture Mode가 Tile이 아닙니다.";
-            //         helpBox.text = message;
-            //         helpBox.SetActive(true);
-            //
-            //         return;
-            //     }
-            //
-            //     // 트레일 렌더러에 머티리얼이 있는지 체크
-            //     int notFindMaterialIndex = CheckTrailRendererShader();
-            //     if (notFindMaterialIndex != -1)
-            //     {
-            //         helpBox.text = $"{notFindMaterialIndex}번째 Renderer의 Material이 없습니다.";
-            //         helpBox.SetActive(true);
-            //     }
-            //
-            //     int notExposedParameter = CheckExposedParameter();
-            //     if (notExposedParameter != -1)
-            //     {
-            //         fixHelpBox.text =
-            //             $"{notExposedParameter}번째 Renderer의 Material에 _MoveToMaterialUV가 식별됩니다.";
-            //         fixHelpBox.SetActive(true);
-            //     }
-            // }).Every(100);
+
+            _root.schedule.Execute(() => {
+                fixHelpBox.SetActive(false);
+
+                int notExposedParameter = CheckExposedParameter();
+                if (notExposedParameter != -1)
+                {
+                    fixHelpBox.text =
+                        $"{notExposedParameter}번째 Renderer의 Material에 _MoveToMaterialUV가 식별됩니다.";
+                    fixHelpBox.SetActive(true);
+                }
+            }).Every(100);
 
             title.RegisterCallback<ClickEvent>(_ => TrailFXEditorUtility.OpenBehaviour(_trailFX));
             fixButton.RegisterCallback<ClickEvent>(OnFixShaderGraph);
-            editorPlayButton.clicked += () => OnEditorButton(editorPlayButton);
+            editorPlayButton.clicked += () => {
+                OnEditorButton(editorPlayButton);
+            };
 
             return _root;
         }
@@ -154,8 +132,8 @@ namespace NKStudio
         private void OnEditorButton(VisualElement element)
         {
             _editorPlayProperty.boolValue = !_editorPlayProperty.boolValue;
-            RefreshButtonStyle(element);
             EnsureSystemStability();
+            RefreshButtonStyle(element);
             serializedObject.ApplyModifiedProperties();
         }
 
@@ -179,26 +157,35 @@ namespace NKStudio
             }
         }
 
+        private void RefreshListViewStyle()
+        {
+            _materialDataField.SetEnabled(_editorPlayProperty.boolValue);
+        }
+
         private void OnFixShaderGraph(ClickEvent evt)
         {
             int targetIndex = -1;
-            string targetName = "_MoveToMaterialUV";
-            int count = _trailFX.MultipleMaterialData.Length;
+            int count = _materialDataProperty.arraySize;
 
             #region 머티리얼에 _MoveToMaterialUV가 있는지 체크
             // 트레일 렌더러에 있는 머터리얼에 각각 접근해서 _MoveToMaterialUV가 있는지 체크
             for (int i = 0; i < count; i++)
             {
-                SerializedObject so =
-                    new(_trailFX.MultipleMaterialData[i].trailRender.sharedMaterial);
-                SerializedProperty property = so.FindProperty("m_SavedProperties.m_Floats");
+                var targetMaterial = _materialDataProperty.GetArrayElementAtIndex(i).FindPropertyRelative("Origin").objectReferenceValue;
+                if (!targetMaterial)
+                    continue;
+
+                // 해당 머티리얼에 접근합니다.
+                SerializedObject materialObject = new(targetMaterial);
+                SerializedProperty savedProperties = materialObject.FindProperty("m_SavedProperties.m_Floats");
 
                 // property에서 _MoveToMaterialUV을 가진 property를 찾는다.
-                for (int j = 0; j < property.arraySize; j++)
+                for (int j = 0; j < savedProperties.arraySize; j++)
                 {
-                    string propertyName = property.GetArrayElementAtIndex(j).FindPropertyRelative("first")
+                    string propertyName = savedProperties.GetArrayElementAtIndex(j).FindPropertyRelative("first")
                         .stringValue;
-                    if (propertyName == targetName)
+
+                    if (propertyName == TargetShaderParameterReference)
                     {
                         targetIndex = i;
                         break;
@@ -208,11 +195,11 @@ namespace NKStudio
             #endregion
 
             // 셰이더 그래프에서 해당 프로퍼티의 Expose를 끈다.
-            var material = _trailFX.MultipleMaterialData[targetIndex].trailRender.sharedMaterial;
-            OffExposed(material, targetName);
+            Material material = (Material)_materialDataProperty.GetArrayElementAtIndex(targetIndex).FindPropertyRelative("Origin").objectReferenceValue;
+            OffExposed(material);
 
             // 저장된 프로퍼티 제거
-            RemoveSavedProperties(targetIndex, targetName);
+            RemoveSavedProperties(targetIndex);
 
             // 새로 고침
             AssetDatabase.Refresh();
@@ -222,6 +209,7 @@ namespace NKStudio
         {
             // true라면 에디터에서 작업을 시작합니다.
             bool activeButton = _editorPlayProperty.boolValue;
+
             if (activeButton)
             {
                 // 여기에서는 인스턴스를 만들어야 한다.
@@ -237,7 +225,6 @@ namespace NKStudio
             {
                 // 여기서는 인스턴스를 삭제하고 원래의 머티리얼이 동작되도록 해야한다.
                 _materialDataField.SetEnabled(false);
-
                 for (int i = 0; i < _materialDataProperty.arraySize; i++)
                 {
 
@@ -254,69 +241,6 @@ namespace NKStudio
             }
         }
 
-        private VisualElement MakeItem()
-        {
-            TemplateContainer item = trailTemplate.Instantiate();
-            var trailRendererField = item.Q<ObjectField>();
-            trailRendererField.bindingPath = "trailRender";
-            trailRendererField.objectType = typeof(TrailRenderer);
-
-            trailRendererField.RegisterValueChangedCallback(evt => {
-                if (trailRendererField.userData != null)
-                {
-                    // 수정된 인덱스 번호를 가져온다.
-                    int index = int.Parse(trailRendererField.userData.ToString());
-
-                    if (evt.newValue != null)
-                    {
-                        // 트레일 렌더러 
-                        TrailRenderer trailRenderer = evt.newValue as TrailRenderer;
-
-                        if (!trailRenderer)
-                            return;
-
-                        // 트레일 렌더러 변수에 트레일 렌더러 참조
-                        _materialDataProperty.GetArrayElementAtIndex(index).FindPropertyRelative("trailRender")
-                            .objectReferenceValue = trailRenderer;
-
-                        if (trailRenderer.sharedMaterial != null)
-                        {
-                            // 오리진에 기록을 해놓는다.
-                            _materialDataProperty.GetArrayElementAtIndex(index).FindPropertyRelative("Origin")
-                                .objectReferenceValue = trailRenderer.sharedMaterial;
-
-                            // 인스턴스 머티리얼로 변경합니다.
-                            ChangeInstanceMaterial(index);
-                        }
-                    }
-                    else
-                    {
-                        TrailRenderer previousTrailRender = (TrailRenderer)evt.previousValue;
-
-                        // 트레일 렌더러에 있는 머티리얼을 원래대로 되돌린다.
-                        ResetMaterialToOriginInTrailRenderer(previousTrailRender, index);
-                    }
-                }
-
-                _materialDataProperty.serializedObject.ApplyModifiedProperties();
-            });
-
-            return item;
-        }
-
-        private void AddItem(IEnumerable<int> obj)
-        {
-            // 마지막 요소에 선택
-            _materialDataField.selectedIndex = _materialDataProperty.arraySize - 1;
-
-            // 마지막 요소 접근 및 값 수정
-            SerializedProperty element = _materialDataProperty.GetArrayElementAtIndex(_materialDataField.selectedIndex);
-            element.FindPropertyRelative("trailRender").objectReferenceValue = null;
-            element.FindPropertyRelative("CashMaterial").objectReferenceValue = null;
-
-            // 변경 된 값 적용
-            _materialDataProperty.serializedObject.ApplyModifiedProperties();
-        }
 
         /// <summary>
         /// 머티리얼 데이터 리스트에 Index로 이동하여 해당 트레일 렌더러에 접근하고,
@@ -329,24 +253,24 @@ namespace NKStudio
             var targetRenderer = _materialDataProperty
                 .GetArrayElementAtIndex(index)
                 .FindPropertyRelative("trailRender").objectReferenceValue;
-            
+
             // 없으면 리턴
-            if(targetRenderer == null)
+            if (targetRenderer == null)
                 return;
-            
+
             // 머티리얼 공간 접근
             SerializedObject trailRenderMaterials = new(targetRenderer);
 
             // 머티리얼 프로퍼티 접근
             var materialsProperty = trailRenderMaterials.FindProperty("m_Materials");
-                            
+
             // 0번째 머리티얼을 인스턴스 머티리얼로 변경한다.
             materialsProperty.GetArrayElementAtIndex(0).objectReferenceValue = Instantiate(
                 _materialDataProperty.GetArrayElementAtIndex(index).FindPropertyRelative("Origin")
                     .objectReferenceValue);
             materialsProperty.serializedObject.ApplyModifiedProperties();
         }
-        
+
         /// <summary>
         /// 트레일 렌더러에 있는 머티리얼을 Origin으로 다시 되돌립니다.
         /// </summary>
@@ -377,7 +301,10 @@ namespace NKStudio
             // 인스턴스 머티리얼을 사용하고 있다면 제거한다.
             var isInstanceMaterial = AssetDatabase.GetAssetPath(targetRenderer.sharedMaterial);
             if (string.IsNullOrWhiteSpace(isInstanceMaterial))
+            {
                 DestroyImmediate(targetRenderer.sharedMaterial);
+                targetRenderer.sharedMaterial = null;
+            }
 
             // 프리팹 오브젝트라면 원래대로 되돌리고, 일반 오브젝트라면 원래 머티리얼로 되돌린다.
             if (PrefabUtility.GetPrefabInstanceStatus(targetRenderer) != PrefabInstanceStatus.NotAPrefab)
@@ -404,6 +331,81 @@ namespace NKStudio
         //     _materialDataField.Rebuild();
         // }
 
+        /// <summary>
+        /// 아이템 요소를 만들때
+        /// </summary>
+        /// <returns></returns>
+        private VisualElement MakeItem()
+        {
+            TemplateContainer item = trailTemplate.Instantiate();
+            var trailRendererField = item.Q<ObjectField>();
+            trailRendererField.bindingPath = "trailRender";
+            trailRendererField.objectType = typeof(TrailRenderer);
+
+            trailRendererField.RegisterValueChangedCallback(evt => {
+                if (trailRendererField.userData != null)
+                {
+                    // 수정된 인덱스 번호를 가져온다.
+                    int index = int.Parse(trailRendererField.userData.ToString());
+
+                    // 데이터가 바인딩 되었다면,
+                    bool isBindData = evt.newValue != null;
+                    if (isBindData)
+                    {
+                        // 트레일 렌더러 
+                        TrailRenderer trailRenderer = evt.newValue as TrailRenderer;
+
+                        if (!trailRenderer)
+                            return;
+
+                        // 만약 타일이 아니라면,
+                        if (trailRenderer.textureMode != LineTextureMode.Tile)
+                        {
+                            Debug.LogError(evt.newValue.name + "의 Texture Mode가 Tile이 아닙니다.");
+                            _materialDataField.Rebuild();
+                            return;
+                        }
+
+                        if (trailRenderer.sharedMaterial != null)
+                        {
+                            // 트레일 렌더러 변수에 트레일 렌더러 참조
+                            _materialDataProperty.GetArrayElementAtIndex(index).FindPropertyRelative("trailRender")
+                                .objectReferenceValue = trailRenderer;
+
+                            // 오리진에 기록을 해놓는다.
+                            _materialDataProperty.GetArrayElementAtIndex(index).FindPropertyRelative("Origin")
+                                .objectReferenceValue = trailRenderer.sharedMaterial;
+
+                            // 인스턴스 머티리얼로 변경합니다.
+                            ChangeInstanceMaterial(index);
+                        }
+                        else
+                        {
+                            Debug.LogError(evt.newValue.name + "에 머티리얼이 없습니다.");
+                            _materialDataField.Rebuild();
+
+                        }
+                    }
+                    else
+                    {
+                        TrailRenderer previousTrailRender = (TrailRenderer)evt.previousValue;
+
+                        // 트레일 렌더러에 있는 머티리얼을 원래대로 되돌린다.
+                        ResetMaterialToOriginInTrailRenderer(previousTrailRender, index);
+                    }
+                }
+
+                _materialDataProperty.serializedObject.ApplyModifiedProperties();
+            });
+
+            return item;
+        }
+        
+        /// <summary>
+        ///  아이템이 바인딩 될 때
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="index"></param>
         private void BindItem(VisualElement element, int index)
         {
             var trailRenderField = element.Q<ObjectField>();
@@ -417,8 +419,28 @@ namespace NKStudio
 
             _materialDataProperty.serializedObject.ApplyModifiedProperties();
         }
+        
+        /// <summary>
+        /// 아이템을 추가했을 때
+        /// </summary>
+        /// <param name="obj"></param>
+        private void AddItem(IEnumerable<int> obj)
+        {
+            // 마지막 요소에 선택
+            _materialDataField.selectedIndex = _materialDataProperty.arraySize - 1;
 
+            // 마지막 요소 접근 및 값 수정
+            SerializedProperty element = _materialDataProperty.GetArrayElementAtIndex(_materialDataField.selectedIndex);
+            element.FindPropertyRelative("trailRender").objectReferenceValue = null;
+            element.FindPropertyRelative("CashMaterial").objectReferenceValue = null;
 
+            // 변경 된 값 적용
+            _materialDataProperty.serializedObject.ApplyModifiedProperties();
+        }
+        
+        /// <summary>
+        /// 프로퍼티를 찾습니다.
+        /// </summary>
         private void FindProperties()
         {
             _materialDataProperty = serializedObject.FindProperty("MultipleMaterialData");
@@ -426,16 +448,15 @@ namespace NKStudio
             _editorPlayProperty = serializedObject.FindProperty("editorPlay");
         }
 
-
         /// <summary>
         /// 해당 트레일 렌더러의 머티리얼에 있는 _MoveToMaterialUV를 제거합니다.
         /// </summary>
         /// <param name="trailRenderIndex"></param>
         /// <param name="parameterName"></param>
-        private void RemoveSavedProperties(int trailRenderIndex, string parameterName)
+        private void RemoveSavedProperties(int trailRenderIndex)
         {
             SerializedObject so =
-                new(_trailFX.MultipleMaterialData[trailRenderIndex].trailRender.sharedMaterial);
+                new(_trailFX.MultipleMaterialData[trailRenderIndex].Origin);
             SerializedProperty property = so.FindProperty("m_SavedProperties.m_Floats");
 
             // property에서 targetName을 가진 property를 찾아서 제거한다.
@@ -445,12 +466,11 @@ namespace NKStudio
                 string propertyName = property.GetArrayElementAtIndex(j).FindPropertyRelative("first")
                     .stringValue;
 
-                if (propertyName != parameterName) continue;
+                if (propertyName != TargetShaderParameterReference) continue;
                 targetIndex = j;
                 break;
             }
 
-            Debug.Log(targetIndex);
             if (targetIndex != -1)
                 property.DeleteArrayElementAtIndex(targetIndex);
 
@@ -462,7 +482,7 @@ namespace NKStudio
         /// </summary>
         /// <param name="material">타겟 머티리얼</param>
         /// <param name="parameterName">Exposed를 끌 파라미터 이름</param>
-        private void OffExposed(Material material, string parameterName)
+        private void OffExposed(Material material)
         {
             if (!material.IsShaderGraph())
                 return;
@@ -483,7 +503,7 @@ namespace NKStudio
 
             foreach (AbstractShaderProperty property in graph.properties)
             {
-                if (property.referenceName == parameterName)
+                if (property.referenceName == TargetShaderParameterReference)
                     property.generatePropertyBlock = false;
             }
 
@@ -492,7 +512,6 @@ namespace NKStudio
             var nextSerialize = MultiJson.Serialize(graph);
             File.WriteAllText(shaderPath, nextSerialize, Encoding.UTF8);
         }
-
 
         /// <summary>
         /// 아이콘을 설정합니다.
@@ -505,80 +524,32 @@ namespace NKStudio
             TrailFXEditorUtility.ApplyIcon(iconPath, _trailFX);
         }
 
+        /// <summary>
+        /// 해당 머티리얼에 _MoveToMaterialUV가 있는지 체크합니다.
+        /// </summary>
+        /// <returns>있으면 해당 리스트 번호를 반환하고, 없으면 -1을 반환합니다.</returns>
         private int CheckExposedParameter()
         {
-            int count = _trailFX.MultipleMaterialData.Length;
+            int count = _materialDataProperty.arraySize;
 
             for (int i = 0; i < count; i++)
             {
-                if (!_trailFX.MultipleMaterialData[i].trailRender)
+                // 머티리얼이 없으면 Continue 합니다.
+                var targetMaterial = _materialDataProperty.GetArrayElementAtIndex(i).FindPropertyRelative("Origin").objectReferenceValue;
+                if (!targetMaterial)
                     continue;
 
-                if (!_trailFX.MultipleMaterialData[i].trailRender.sharedMaterial)
-                    continue;
-
-                SerializedObject so = new(_trailFX.MultipleMaterialData[i].trailRender.sharedMaterial);
-                SerializedProperty property = so.FindProperty("m_SavedProperties.m_Floats");
-
-                string targetName = "_MoveToMaterialUV";
+                // 해당 머티리얼에 접근합니다.
+                SerializedObject materialObject = new(targetMaterial);
+                SerializedProperty savedProperties = materialObject.FindProperty("m_SavedProperties.m_Floats");
 
                 // property에서 targetName을 가진 property를 찾아서 제거한다.
-                for (int j = 0; j < property.arraySize; j++)
+                for (int j = 0; j < savedProperties.arraySize; j++)
                 {
-                    string propertyName = property.GetArrayElementAtIndex(j).FindPropertyRelative("first").stringValue;
-                    if (propertyName == targetName)
+                    string propertyName = savedProperties.GetArrayElementAtIndex(j).FindPropertyRelative("first").stringValue;
+                    if (propertyName == TargetShaderParameterReference)
                         return i;
                 }
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// MultipleMaterialData에서 Trail Renderer의 Texture Mode가 Tile로 안되어있는 녀석의 인덱스를 반환합니다.
-        /// </summary>
-        /// <returns>Tile으로 안되있는 인덱스 번호</returns>
-        private int CheckTrailRendererTile()
-        {
-            if (_trailFX.MultipleMaterialData.Length == 0)
-                return -1;
-
-            int count = _trailFX.MultipleMaterialData.Length;
-
-            for (int i = 0; i < count; i++)
-            {
-                if (!_trailFX.MultipleMaterialData[i].trailRender)
-                    continue;
-
-                if (_trailFX.MultipleMaterialData[i].trailRender.textureMode != LineTextureMode.Tile)
-                    return i;
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// 연결된 트레인 렌더러에 머티리얼이 비어있는지 체크
-        /// </summary>
-        /// <returns>비어있는 인덱스 번호를 반환</returns>
-        private int CheckTrailRendererShader()
-        {
-            if (_trailFX.MultipleMaterialData.Length == 0)
-                return -1;
-
-            int count = _trailFX.MultipleMaterialData.Length;
-            for (int i = 0; i < count; i++)
-            {
-                TrailRenderer trailRenderer = _trailFX.MultipleMaterialData[i].trailRender;
-
-                if (!trailRenderer)
-                    continue;
-
-                // 재질이 비었는지 검사
-                if (trailRenderer.sharedMaterial == null)
-                    return i;
-
-                // 재질이 셰이더를 가지고 있는지 검사
             }
 
             return -1;

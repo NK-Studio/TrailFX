@@ -2,7 +2,7 @@
 Trail 컴포넌트가 Tiling 으로 설정되어야함. (그래야 스크롤을 위한 UV가 Trail 세그먼트 크기와 상관 없이 일정하게 나옴)
 */
 
-Shader "MoveToTrailUV/MoveToTrailUV_Add"
+Shader "Universal Render Pipeline/TrailFX/MoveToTrailUV_Add"
 {
     Properties
     {

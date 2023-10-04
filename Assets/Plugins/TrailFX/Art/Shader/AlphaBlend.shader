@@ -1,4 +1,4 @@
-Shader "MoveToTrailUV/AlphaBlend"
+Shader "Universal Render Pipeline/TrailFX/AlphaBlend"
 {
     Properties
     {
