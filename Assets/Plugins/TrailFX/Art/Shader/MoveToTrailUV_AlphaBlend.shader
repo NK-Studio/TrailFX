@@ -85,6 +85,7 @@ Shader "Universal Render Pipeline/TrailFX/MoveToTrailUV_AlphaBLend"
 					col.a = alphaMix;
 
 					return col;
+					//return half4(_MoveToMaterialUV,_MoveToMaterialUV,_MoveToMaterialUV,1);
 				}
 				ENDHLSL
 			}
