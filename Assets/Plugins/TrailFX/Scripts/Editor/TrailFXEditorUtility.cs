@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-                  #if UNITY_EDITOR
+#if UNITY_EDITOR
 namespace FX
 {
     using UnityEditor;

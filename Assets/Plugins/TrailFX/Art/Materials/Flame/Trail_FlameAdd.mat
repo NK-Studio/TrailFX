@@ -2,14 +2,16 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Trail_FlameAdd
   m_Shader: {fileID: 4800000, guid: 0bf068526a8b4af48b092394026ec12b, type: 3}
-  m_ShaderKeywords: TINTTEX_ON
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - TINTTEX_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -59,6 +61,7 @@ Material:
         m_Texture: {fileID: 2800000, guid: ae09abbcb3af9f148bfc2c4cc3504a0c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
@@ -73,12 +76,12 @@ Material:
     - _MainScrollSpeedU: 5
     - _MainScrollSpeedV: 0
     - _MainTexMultiplier: 1.1
-    - _MainTexPow: 0.6
+    - _MainTexPow: 1.72
     - _MainTexVFade: 0
     - _MainTexVFadePow: 1
     - _Metallic: 0
     - _Mode: 0
-    - _Multiplier: 3
+    - _Multiplier: 5.37
     - _OcclusionStrength: 1
     - _OffSetFactor: 0
     - _OffSetUnits: 0

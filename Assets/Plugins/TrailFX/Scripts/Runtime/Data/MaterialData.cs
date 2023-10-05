@@ -9,6 +9,5 @@ namespace NKStudio
         public Vector2 uvTiling;
         public float Move;
         public Material Origin;
-        public Material CashMaterial;
     }
 }

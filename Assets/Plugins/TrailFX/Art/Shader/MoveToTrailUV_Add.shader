@@ -62,11 +62,11 @@ Shader "Universal Render Pipeline/TrailFX/MoveToTrailUV_Add"
                 half _Multiplier;
                 half _MainScrollSpeedU;
                 half _MainScrollSpeedV;
-            CBUFFER_END
 
-            // MoveToMaterialUV 스크립트에서 전달받는 UV 스크롤 값.
-            // 프로퍼티에는 일부러 넣지 않음. 프로퍼티에 넣을 경우 에디터에서 미리보기로 전달되는 값들이 계속 재질 버전 변경으로 인식되어서 프로퍼티 없이 작동하는 방식으로 제작
-            half _MoveToMaterialUV;
+                // MoveToMaterialUV 스크립트에서 전달받는 UV 스크롤 값.
+                // 프로퍼티에는 일부러 넣지 않음. 프로퍼티에 넣을 경우 에디터에서 미리보기로 전달되는 값들이 계속 재질 버전 변경으로 인식되어서 프로퍼티 없이 작동하는 방식으로 제작
+                half _MoveToMaterialUV;
+            CBUFFER_END
 
             Varyings vert(Attributes IN)
             {
