@@ -10,6 +10,10 @@
 -	(핵심) 셰이더 그래프에서 _MoveToMaterialUV가 Exposed가 활성화 되어있을 때 버튼 원클릭으로 Exposed를 꺼주고 머티리얼에서 SavedProerty에 추가된 해당 프로퍼티를 제거함
 -	셰이더 파일 UTF-8로 변경
 
+# 호환 엔진 버전
+2022.3 LTS
+2021.3 LTS
+
 # 사용 방법
 ![컴포넌트](https://github.com/NK-Studio/TrailFX/blob/main/GitHub/Component.png)  
 1.	Trail FX 스크립트를 오브젝트에 적용합니다.  
