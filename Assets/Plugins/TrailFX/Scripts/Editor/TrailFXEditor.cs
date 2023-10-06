@@ -111,6 +111,7 @@ namespace NKStudio
             group.Add(_infoBox);
             _root.Add(_editorPlayButton);
 
+            RefreshMoveObjectField();
             RefreshListViewStyle();
             RefreshButtonStyle(_editorPlayButton);
             RefreshActiveHelpBox();
@@ -135,6 +136,17 @@ namespace NKStudio
             return _root;
         }
 
+        /// <summary>
+        /// MoveObject를 리프래쉬 합니다.
+        /// </summary>
+        private void RefreshMoveObjectField()
+        {
+            if (EditorApplication.isPlaying)
+                _moveObjectField.SetEnabled(false);
+            else
+                _moveObjectField.SetEnabled(true);
+        }
+        
         /// <summary>
         /// 플레이 모드 버튼을 눌렀을 때 처리
         /// </summary>
@@ -182,15 +194,34 @@ namespace NKStudio
                 else
                     element.RemoveFromClassList("ButtonActive_white");
             }
+
+            // 유니티가 프레이 모드라면 버튼을 비활성화 시킴
+            if (EditorApplication.isPlaying)
+                element.SetEnabled(false);
+            else
+                element.SetEnabled(true);
         }
 
+        /// <summary>
+        /// 리스트 뷰를 새로고침 합니다.
+        /// </summary>
         private void RefreshListViewStyle()
         {
             // 에디터 플레이 모드면 리스트 뷰는 비활성화 되어야 한다.
             bool active = !IsEditorPlayMode();
             _materialDataField.SetEnabled(active);
+            
+            // 유니티가 프레이 모드라면 버튼을 비활성화 시킴
+            if (EditorApplication.isPlaying)
+                _materialDataField.SetEnabled(false);
+            else
+                _materialDataField.SetEnabled(true);
         }
 
+        /// <summary>
+        /// 셰이더 그래프에서 _MoveToMaterialUV가 Exposed되어 있으면 그것에 대한 처리를 합니다. 
+        /// </summary>
+        /// <param name="evt"></param>
         private void OnFixShaderGraph(ClickEvent evt)
         {
             if (IsEditorPlayMode())
