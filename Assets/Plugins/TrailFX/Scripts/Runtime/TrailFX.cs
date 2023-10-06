@@ -76,7 +76,7 @@ namespace NKStudio
                 return;
             }
 
-            if (MultipleMaterialData.Length == 0)
+            if (MultipleMaterialData == null || MultipleMaterialData.Length == 0)
             {
                 Debug.LogWarning("MultipleMaterialData에 아무것도 없습니다.");
                 return;
@@ -113,6 +113,9 @@ namespace NKStudio
             // 모든 재질의 _MoveToMaterialUV 값을 0으로 리셋.
             // 이렇게 하는 이유? 셰이더 프로퍼티에 존재하지 않더라도 경우에 따라 재질의 Saved Property에 존재할 수 있어서 자꾸 Dirty 상태가 됨. 셰이더나 셰이더그래프에서 한 번이라도 인스펙터에 Expose 되면 재질에는 프로퍼티가 저장됨.
             // 이렇게 해도 Saved Property가 존재하면 사용자 조작에 따라서 Dirty 되는 경우를 피할 수 없음. 유니티 API에서 재질의 Saved Property에 접근하는 방법을 아직 알아내지 못함.
+            if (MultipleMaterialData == null || MultipleMaterialData.Length == 0)
+                return;
+            
             foreach (MaterialData materialData in MultipleMaterialData)
                 if (materialData.trailRender.sharedMaterial)
                     materialData.trailRender.sharedMaterial.SetFloat(MoveToMaterialUV, 0f);
