@@ -26,7 +26,7 @@ Trail Renderer의 Texture Mode는 Tile로 설정해야 합니다.
 
 # ShaderGraph와 연동
 ![셰이더 그래프 연동](https://github.com/NK-Studio/TrailFX/blob/main/GitHub/ShaderGraphInfo.png)  
-셰이더그래프 블랙보드의 레퍼런스 이름을 규칙에 맞게 지정해야 합니다.
+셰이더그래프 블랙보드의 레퍼런스 이름을 규칙에 맞게 지정해야 합니다.  
 1.	메인 텍스처는 _MainTex로 합니다.
 2.	타일링과 오프셋 조절용 Vector4는 _MainTex_ST로 합니다.
 3.	Trail FX 스크립트에서 받아들일 이동 값은 _MoveToMaterialUV로 합니다.
@@ -41,13 +41,15 @@ Trail Renderer의 Texture Mode는 Tile로 설정해야 합니다.
 HLSL 코드에서 _MoveToMaterialUV 변수를 선언하고 uv 연산 결과에 빼 주면 됩니다. (o.uv.x -= … 등으로 뺄셈인 점 주의)
 
 ![메인 텍스쳐](https://github.com/NK-Studio/TrailFX/blob/main/GitHub/mainTex.png)
-Trail FX 스크립트의 이동 값은 메인 텍스처에 전달됩니다. 유니티 셰이더에서 메인 텍스처를 구분하는 규칙은 프로퍼티 이름이 _MainTex 이거나 [MainTexture] 어트리뷰트를 사용해야합니다.
+Trail FX 스크립트의 이동 값은 메인 텍스처에 전달됩니다.  
+유니티 셰이더에서 메인 텍스처를 구분하는 규칙은 프로퍼티 이름이 _MainTex 이거나 [MainTexture] 어트리뷰트를 사용해야합니다.  
 이렇게 지정된 메인 텍스처 이름 + _ST 이름규칙으로 구성된 Tiling & Offset 변수 (half4 혹은 float4)가 선언되어야 합니다.  
 참고 : 메인 텍스처 설명 문서 - https://docs.unity3d.com/ScriptReference/Material-mainTexture.html 
 
 # _MoveToMaterialUV 프로퍼티의 Dirty 이슈
 Dirty이슈는 Git 등의 버전관리 도구에서 재질의 _MoveToMaterialUV 값이 자꾸 변경되었다고 나오는 상황을 말합니다.  
-이 상황은 셰이더그래프의 블랙보드에서 _MoveToMaterialUV 프로퍼티를 추가할 때 주로 발생합니다. 커스텀 셰이더에서는 재질에 _MoveToMaterialUV 프로퍼티가 저장될 이유가 없지만 셰이더그래프의 블랙보드에서는 프로퍼티의 Expose 기본값이 켜져 있어서 재질에 _MoveToMaterialUV 프로퍼티가 저장될 수 있습니다.
+이 상황은 셰이더그래프의 블랙보드에서 _MoveToMaterialUV 프로퍼티를 추가할 때 주로 발생합니다.  
+커스텀 셰이더에서는 재질에 _MoveToMaterialUV 프로퍼티가 저장될 이유가 없지만 셰이더그래프의 블랙보드에서는 프로퍼티의 Expose 기본값이 켜져 있어서 재질에 _MoveToMaterialUV 프로퍼티가 저장될 수 있습니다.  
 ![커스텀 셰이더 연동](https://github.com/NK-Studio/TrailFX/blob/main/GitHub/ShaderGraph-Exposed.png)  
-_MoveToMaterialUV 프로퍼티가 재질에 저장되면 Trail FX에서 다음과 같이 에러 메시지가 보여집니다.
+_MoveToMaterialUV 프로퍼티가 재질에 저장되면 Trail FX에서 다음과 같이 에러 메시지가 보여집니다.  
 Fix 버튼을 누르면 자동으로 셰이더 그래프에서 _MoveToMaterialUV의 Exposed가 off되고, 머티리얼에 SavedProperties에서 _MoveToMaterialUV가 자동으로 제거됩니다. 
