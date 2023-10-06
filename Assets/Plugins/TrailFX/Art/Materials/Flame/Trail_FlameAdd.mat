@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Trail_FlameAdd
   m_Shader: {fileID: 4800000, guid: 0bf068526a8b4af48b092394026ec12b, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
   - TINTTEX_ON
@@ -18,6 +20,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -75,13 +78,13 @@ Material:
     - _LineFade: 1
     - _MainScrollSpeedU: 5
     - _MainScrollSpeedV: 0
-    - _MainTexMultiplier: 1.1
+    - _MainTexMultiplier: 3.52
     - _MainTexPow: 1.72
-    - _MainTexVFade: 0
+    - _MainTexVFade: 0.13
     - _MainTexVFadePow: 1
     - _Metallic: 0
     - _Mode: 0
-    - _Multiplier: 5.37
+    - _Multiplier: 8.9
     - _OcclusionStrength: 1
     - _OffSetFactor: 0
     - _OffSetUnits: 0

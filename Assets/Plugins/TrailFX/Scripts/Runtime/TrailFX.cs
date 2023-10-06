@@ -27,19 +27,16 @@ namespace NKStudio
         [SerializeField]
         private bool editorPlayMode;
 
-        private void Awake()
+        private void Start()
         {
 #if UNITY_EDITOR
             // 유니티의 플레이 모드 상태에서 TrailFX의 플레이 모드가 켜져있으면 안된다.
             if (IsPlayMode)
-            {
                 StartCoroutine(EnsureSystemStability());
-
-                if (editorPlayMode)
-                    return;
-            }
+            
+            if (editorPlayMode)
+                return;
 #endif
-
             if (MultipleMaterialData == null || MultipleMaterialData.Length == 0)
                 return;
 

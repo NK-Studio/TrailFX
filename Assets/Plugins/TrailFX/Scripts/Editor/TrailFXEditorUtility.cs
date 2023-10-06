@@ -47,7 +47,7 @@ namespace FX
             public static (HelpBox helpBox, Button fixButton) FixHelpBox()
             {
                 var helpBox = new HelpBox {
-                    messageType = HelpBoxMessageType.Warning,
+                    messageType = HelpBoxMessageType.Error,
                     style = {
                         alignItems = Align.FlexStart,
                         paddingLeft = 12,
