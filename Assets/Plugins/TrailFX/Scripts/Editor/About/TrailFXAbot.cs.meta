@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: aa585e636dffb5948b825ec185109143
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_ViewDataDictionary: {instanceID: 0}
+  - TrailFXAboutUXML: {fileID: 9197481963319205126, guid: 015747e28046b11448d0d82094b7f7b2, type: 3}
+  - packageJson: {fileID: 4900000, guid: d59f61a911a487e45bc633d322c42db1, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
