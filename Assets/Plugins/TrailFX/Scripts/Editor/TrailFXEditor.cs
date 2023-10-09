@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEditor;
@@ -47,7 +48,7 @@ namespace NKStudio
             string path = AssetDatabase.GUIDToAssetPath("b94f253bde590554885ec4369af52afd");
             _styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(path);
         }
-
+        
         public override VisualElement CreateInspectorGUI()
         {
             // Init

@@ -1,7 +1,7 @@
 {
   "name": "com.nkstudio.trailFX",
   "displayName": "Trail FX",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "unity": "2021.3",
   "description": "This is an asset that effects Unity's Trail Renderer.",
   "keywords": [
