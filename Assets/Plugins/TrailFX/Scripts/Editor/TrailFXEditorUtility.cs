@@ -9,10 +9,8 @@ namespace NKStudio
     {
         private static VisualElement _cachedContextWidthElement;
         private static VisualElement _cachedInspectorElement;
-
         
-        
-        public static VisualElement Space(float width, float height)
+        internal static VisualElement Space(float width, float height)
         {
             VisualElement space = new();
             space.style.width = width;
@@ -20,13 +18,13 @@ namespace NKStudio
             return space;
         }
 
-        public static void SetActive(this VisualElement field, bool active)
+        internal static void SetActive(this VisualElement field, bool active)
         {
             field.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
             field.style.visibility = active ? Visibility.Visible : Visibility.Hidden;
         }
 
-        public static void ApplyIcon(string iconPath, Object targetObject)
+        internal static void ApplyIcon(string iconPath, Object targetObject)
         {
             var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
 
@@ -43,7 +41,7 @@ namespace NKStudio
         /// Fix Button이 있는 HelpBox를 반환합니다.
         /// </summary>
         /// <returns></returns>
-        public static (HelpBox helpBox, Button fixButton) FixHelpBox()
+        internal static (HelpBox helpBox, Button fixButton) FixHelpBox()
         {
             var helpBox = new HelpBox
             {
@@ -79,7 +77,7 @@ namespace NKStudio
             return (helpBox, fixButton);
         }
 
-        public static void OpenBehaviour(MonoBehaviour targetBehaviour)
+        internal static void OpenBehaviour(MonoBehaviour targetBehaviour)
         {
             var scriptAsset = MonoScript.FromMonoBehaviour(targetBehaviour);
             var path = AssetDatabase.GetAssetPath(scriptAsset);

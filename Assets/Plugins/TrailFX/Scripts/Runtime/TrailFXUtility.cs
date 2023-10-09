@@ -4,13 +4,13 @@ namespace NKStudio
     public static class TrailFXUtility
     {
         /// <summary>
-        /// ¿¡µğÅÍ ¸ğµåÀÎ°¡?
+        /// ì—ë””í„° ëª¨ë“œì¸ê°€?
         /// </summary>
-        public static bool IsEditorMode => !Application.isPlaying;
+        internal static bool IsEditorMode => !Application.isPlaying;
 
         /// <summary>
-        /// ÇÃ·¹ÀÌ ¸ğµåÀÎ°¡?
+        /// í”Œë ˆì´ ëª¨ë“œì¸ê°€?
         /// </summary>
-        public static bool IsPlayMode => Application.isPlaying;
+        internal static bool IsPlayMode => Application.isPlaying;
     }
 }
