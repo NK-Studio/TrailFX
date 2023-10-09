@@ -10,7 +10,7 @@ namespace NKStudio
         public float Move;
 #if UNITY_EDITOR
         public Material Origin;
-        public Material InstanceMaterial;
 #endif
+        public Material InstanceMaterial;
     }
 }
