@@ -1,4 +1,8 @@
 # Changelog
+## [1.0.4] - 2023-10-14
+### Fixed
+- 범용성을 위해 InstanceMaterial로 캐싱하던 것을 Material을 write 하여 유니가 작동으로 생성하는 Instance 머티리얼을 사용하도록 처리
+
 ## [1.0.3] - 2023-10-09
 ### Fixed
 - 빌드 안되던 문제 수정

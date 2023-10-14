@@ -11,6 +11,5 @@ namespace NKStudio
 #if UNITY_EDITOR
         public Material Origin;
 #endif
-        public Material InstanceMaterial;
     }
 }
